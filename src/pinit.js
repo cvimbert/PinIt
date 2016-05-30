@@ -38,8 +38,9 @@
             this.point.on("change", onPointChanged);
 
             // écoute de l'élément lié dans le DOM
-            $element.on("change", onElementChanged);
-            $element.append("ok");
+            $element.get(0).addEventListener("DOMSubtreeModified", onElementChanged);
+            $element.on("DOMElementChanged", onElementChanged);
+            $element.append("ok3");
 
             function onPointChanged(e) {
                 console.log("Point changed:");
