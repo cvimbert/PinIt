@@ -1,0 +1,17 @@
+{
+  "name": "pinit_test",
+  "authors": [
+    "Christophe Vimbert <c.vimbert@outlook.fr>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

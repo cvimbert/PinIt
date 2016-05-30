@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PinIt</title>
+    <script src="bower_components/requirejs/require.js"></script>
+    <script src="config.js"></script>
+</head>
+<body>
+<script>
+    require(["pinit"], function(PinIt) {
+
+        var pinIt = new PinIt({
+            props: {
+                x: 0,
+                y: 0
+            },
+            properties: {
+                x: {
+
+                },
+                y: {
+
+                }
+            }
+        });
+
+
+        var element = $("<div></div>");
+        $("body").append(element);
+
+        var c1 = pinIt.createCouple({
+            x: 25,
+            y: 30
+        }, element);
+
+        c1.set("x", 99);
+        element.addClass("test");
+
+        console.log(pinIt);
+    });
+</script>
+</body>
+</html>
