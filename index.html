@@ -5,39 +5,75 @@
     <title>PinIt</title>
     <script src="bower_components/requirejs/require.js"></script>
     <script src="config.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+<div id="container"></div>
 <script>
-    require(["pinit", "jquery"], function(PinIt, $) {
+    require(["pinit", "jquery", "marionette", "Draggable", "backbone"], function(PinIt, $, Marionette, Draggable, Backbone) {
 
         var pinIt = new PinIt({
             props: {
                 x: 0,
                 y: 0
             },
-            properties: {
+            bindings: {
                 x: {
-
+                    css: "x"
                 },
                 y: {
-
+                    css: "y"
                 }
             }
         });
 
 
-        var element = $("<div></div>");
-        $("body").append(element);
+        /*var element = $("<div></div>");
+        $("body").append(element);*/
 
-        var c1 = pinIt.createCouple({
+        /*var c1 = pinIt.createCouple({
             x: 25,
             y: 30
         }, element);
 
         c1.set("x", 99);
-        element.addClass("test");
+        element.addClass("test");*/
 
-        console.log(pinIt);
+        var TestModel = Backbone.Model.extend({
+            defaults: {
+                x: 0,
+                y: 0
+            }
+        });
+
+        var TestView = Marionette.ItemView.extend({
+            template: function() {
+                return '<div class="test"></div>';
+            },
+            onRender: function() {
+                Draggable.create(this.$el.get(0));
+            }
+        });
+
+        function addTestView(config) {
+            var elem = $("<div></div>");
+            $("#container").append(elem);
+
+            var model = new TestModel(config);
+
+            var view = new TestView({
+                model: model,
+                el: elem
+            });
+
+            view.render();
+
+            pinIt.createCouple(config, view.$el);
+        }
+
+        addTestView({x: 25, y: 100});
+        addTestView({x: 150, y: 200});
+        addTestView({x: 450, y: 200});
     });
 </script>
 </body>
