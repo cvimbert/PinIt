@@ -39,8 +39,17 @@
 
             // écoute de l'élément lié dans le DOM
             // DOMAttrModified
-            $element.get(0).addEventListener("DOMAttrModified", onElementChanged);
+            $element.get(0).addEventListener("DOMSubtreeModified", onElementChanged);
             //$element.on("DOMSubtreeModified", onElementChanged);
+
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    console.log(mutation);
+                });
+            });
+
+            var config = { attributes: true, childList: true, characterData: true };
+            observer.observe($element.get(0), config);
 
             function onPointChanged(e) {
                 console.log("Point changed:");
