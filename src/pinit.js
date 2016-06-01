@@ -6,27 +6,64 @@
         (typeof global == 'object' && global.global === global && global);
 
     if (typeof define === 'function' && define.amd) {
-        define(["backbone", "jquery", "underscore", "TweenLite"], function(Backbone, $, _, TweenLite) {
-            return factory(Backbone, $, _, TweenLite);
+        define(["jquery", "underscore", "TweenLite"], function($, _, TweenLite) {
+            return factory($, _, TweenLite);
         });
     } else {
-        root.PinIt = factory(root.Backbone, root.$, root._, root.TweenLite);
+        root.PinIt = factory(root.$, root._, root.TweenLite);
     }
-})(function(Backbone, $, _, TweenLite) {
+})(function($, _, TweenLite) {
 
     return function(config) {
 
         var dynamicCouples = [];
 
-        var DynamicPointModel = Backbone.Model.extend({
-            defaults: config.props,
-            initialize: function() {
-                this.on("change", this.modelChanged);
-            },
-            modelChanged: function() {
 
+        var DynamicPoint = function(attributes) {
+
+            var t = this;
+            var changeCallback;
+
+            // ajout des valeurs par défaut aux attributs de base si la clé n'existe pas
+            _.each(config.props, function(value, key) {
+                if (attributes[key] === undefined) attributes[key] = value;
+            });
+
+            this.set = function(key, value, sendCallback) {
+                attributes[key] = value;
+
+                if (sendCallback !== false) changeCallback({
+                    key: key,
+                    value: value
+                });
+            };
+
+            this.get = function(key) {
+                return attributes[key];
+            };
+
+            this.on = function(eventName, callback) {
+                if (eventName === "change") changeCallback = callback;
+            };
+
+
+            this.foreach = function(callback) {
+                for (var key in attributes) {
+                    if (attributes.hasOwnProperty(key)) {
+                        callback({
+                            key: key,
+                            value: attributes[key]
+                        });
+                    }
+                }
+            };
+
+            this.triggerChanges = function() {
+                t.foreach(function(e) {
+                    changeCallback(e);
+                });
             }
-        });
+        };
 
 
         var DynamicCouple = function(dynamicPoint, $element) {
@@ -50,24 +87,26 @@
                 var observerConfig = { attributes: true };
                 observer.observe($element.get(0), observerConfig);
 
-                // on initialise les propriétés du DOM
-                _.each(config.props, function(value, key) {
-                    if (isGreensockTransformKey(config.bindings[key].css)) {
-                        var cssObject = {};
-                        cssObject[config.bindings[key].css] = dynamicPoint.get(key);
-
-                        TweenLite.set($element.get(0), {
-                            css: cssObject
-                        });
-                    } else {
-                        $element.css(config.bindings[key].css, value);
-                    }
-                });
+                // on met à jour toutes les objets liés
+                dynamicPoint.triggerChanges();
             };
 
             function onPointChanged(e) {
                 console.log("Point changed:");
-                //console.log(e);
+                console.log(e);
+
+                var bindedAttributeName = config.bindings[e.key].css;
+
+                if (isGreensockTransformKey(bindedAttributeName)) {
+                    var cssObject = {};
+                    cssObject[bindedAttributeName] = e.value;
+
+                    TweenLite.set($element.get(0), {
+                        css: cssObject
+                    });
+                } else {
+                    $element.css(bindedAttributeName, e.value);
+                }
             }
 
 
@@ -79,6 +118,8 @@
             function onElementChanged(mutation) {
                 console.log("Element changed:");
                 //console.log(mutation);
+
+                return;
 
                 // l'élément a subi un changement dans ses attributs. On enregistre les changements dans le modèle
                 if (mutation.type === "attributes" && mutation.attributeName === "style") {
@@ -97,7 +138,7 @@
                         }
 
                         if (currentValue !== cssValues[key]) {
-                            t.set(key, currentValue);
+                            dynamicPoint.set(key, currentValue);
                             cssValues[key] = currentValue;
                         }
                     });
@@ -105,16 +146,12 @@
                     console.log(cssValues);
                 }
             }
-
-            this.set = function(key, value) {
-                t.point.set(key, value);
-            }
         };
 
 
         this.createCouple = function(initProps, element) {
 
-            var point = new DynamicPointModel(initProps);
+            var point = new DynamicPoint(initProps);
             var couple = new DynamicCouple(point, element);
             couple.init();
 
