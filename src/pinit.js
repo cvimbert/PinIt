@@ -6,13 +6,13 @@
         (typeof global == 'object' && global.global === global && global);
 
     if (typeof define === 'function' && define.amd) {
-        define(["jquery", "underscore", "TweenLite"], function($, _, TweenLite) {
-            return factory($, _, TweenLite);
+        define(["underscore", "TweenLite"], function(_, TweenLite) {
+            return factory(_, TweenLite);
         });
     } else {
-        root.PinIt = factory(root.$, root._, root.TweenLite);
+        root.PinIt = factory(root._, root.TweenLite);
     }
-})(function($, _, TweenLite) {
+})(function(_, TweenLite) {
 
     return function(config) {
 
@@ -68,14 +68,12 @@
 
         var DynamicCouple = function(dynamicPoint, $element) {
             var t = this;
-            this.point = dynamicPoint;
-            this.element = $element;
             var cssValues = {};
 
             this.init = function() {
 
                 // écoute du modèle
-                this.point.on("change", onPointChanged);
+                dynamicPoint.on("change", onPointChanged);
 
                 // écoute du DOM
                 var observer = new MutationObserver(function(mutations) {
@@ -117,9 +115,6 @@
 
             function onElementChanged(mutation) {
                 console.log("Element changed:");
-                //console.log(mutation);
-
-                return;
 
                 // l'élément a subi un changement dans ses attributs. On enregistre les changements dans le modèle
                 if (mutation.type === "attributes" && mutation.attributeName === "style") {
