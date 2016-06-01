@@ -47,26 +47,27 @@
                     });
                 });
 
-                var config = { attributes: true };
-                observer.observe($element.get(0), config);
+                var observerConfig = { attributes: true };
+                observer.observe($element.get(0), observerConfig);
 
                 // on initialise les propriétés du DOM
                 _.each(config.props, function(value, key) {
                     if (isGreensockTransformKey(config.bindings[key].css)) {
-                        TweenLite.set($element.get(0), {
-                            css: {
+                        var cssObject = {};
+                        cssObject[config.bindings[key].css] = dynamicPoint.get(key);
 
-                            }
+                        TweenLite.set($element.get(0), {
+                            css: cssObject
                         });
                     } else {
-
+                        $element.css(config.bindings[key].css, value);
                     }
                 });
             };
 
             function onPointChanged(e) {
                 console.log("Point changed:");
-                console.log(e);
+                //console.log(e);
             }
 
 
@@ -77,7 +78,7 @@
 
             function onElementChanged(mutation) {
                 console.log("Element changed:");
-                console.log(mutation);
+                //console.log(mutation);
 
                 // l'élément a subi un changement dans ses attributs. On enregistre les changements dans le modèle
                 if (mutation.type === "attributes" && mutation.attributeName === "style") {
@@ -100,6 +101,8 @@
                             cssValues[key] = currentValue;
                         }
                     });
+
+                    console.log(cssValues);
                 }
             }
 
