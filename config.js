@@ -31,7 +31,8 @@ require.config({
         TweenLite: 'bower_components/gsap/src/uncompressed/TweenLite',
         Draggable: 'bower_components/gsap/src/uncompressed/utils/Draggable',
         marionette: 'bower_components/backbone.marionette/lib/backbone.marionette',
-        pinit: 'src/pinit'
+        pinit: 'src/pinit',
+        dynamicpoint: "bower_components/dynamicpoint/src/dynamicpoint"
     },
     map: {
         '*': {

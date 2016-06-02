@@ -6,69 +6,17 @@
         (typeof global == 'object' && global.global === global && global);
 
     if (typeof define === 'function' && define.amd) {
-        define(["underscore", "TweenLite"], function(_, TweenLite) {
-            return factory(_, TweenLite);
+        define(["underscore", "TweenLite", "dynamicpoint"], function(_, TweenLite, DynamicPoint) {
+            return factory(_, TweenLite, DynamicPoint);
         });
     } else {
-        root.PinIt = factory(root._, root.TweenLite);
+        root.PinIt = factory(root._, root.TweenLite, root.DynamicPoint);
     }
-})(function(_, TweenLite) {
+})(function(_, TweenLite, DynamicPoint) {
 
     return function(config) {
 
         var dynamicCouples = [];
-
-
-        /**
-         * Dynamic point object
-         * @param attributes
-         * @constructor
-         */
-        var DynamicPoint = function(attributes) {
-
-            var t = this;
-            var changeCallback;
-
-            // ajout des valeurs par défaut aux attributs de base si la clé n'existe pas
-            _.each(config.props, function(value, key) {
-                if (attributes[key] === undefined) attributes[key] = value;
-            });
-
-            this.set = function(key, value, sendCallback) {
-                attributes[key] = value;
-
-                if (sendCallback !== false) changeCallback({
-                    key: key,
-                    value: value
-                });
-            };
-
-            this.get = function(key) {
-                return attributes[key];
-            };
-
-            this.on = function(eventName, callback) {
-                if (eventName === "change") changeCallback = callback;
-            };
-
-
-            this.foreach = function(callback) {
-                for (var key in attributes) {
-                    if (attributes.hasOwnProperty(key)) {
-                        callback({
-                            key: key,
-                            value: attributes[key]
-                        });
-                    }
-                }
-            };
-
-            this.triggerChanges = function() {
-                t.foreach(function(e) {
-                    changeCallback(e);
-                });
-            }
-        };
 
 
         /**
@@ -161,12 +109,19 @@
 
 
         this.createCouple = function(initProps, element) {
-
             var point = new DynamicPoint(initProps);
             var couple = new DynamicCouple(point, element);
             couple.init();
 
             return couple;
-        }
+        };
+
+
+        this.bind = function(dynamicPoint, element) {
+            var couple = new DynamicCouple(dynamicPoint, element);
+            couple.init();
+
+            return couple;
+        };
     }
 });

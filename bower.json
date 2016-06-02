@@ -20,6 +20,7 @@
     "requirejs": "^2.2.0",
     "backbone.marionette": "marionette#^2.4.5",
     "underscore": "^1.8.3",
-    "gsap": "greensock#^1.18.4"
+    "gsap": "greensock#^1.18.4",
+    "dynamicpoint": "https://github.com/cvimbert/dynamicpoint.git"
   }
 }
