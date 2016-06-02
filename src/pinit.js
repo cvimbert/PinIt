@@ -19,6 +19,11 @@
         var dynamicCouples = [];
 
 
+        /**
+         * Dynamic point object
+         * @param attributes
+         * @constructor
+         */
         var DynamicPoint = function(attributes) {
 
             var t = this;
@@ -66,6 +71,12 @@
         };
 
 
+        /**
+         * Dynamic couple object
+         * @param dynamicPoint
+         * @param $element
+         * @constructor
+         */
         var DynamicCouple = function(dynamicPoint, $element) {
             var t = this;
             var cssValues = {};
