@@ -85,6 +85,11 @@
                 var observerConfig = { attributes: true };
                 observer.observe($element.get(0), observerConfig);
 
+                // initialisation de l'objet cssValues (valeurs courantes des attributs)
+                dynamicPoint.foreach(function(e) {
+                    cssValues[e.key] = e.value;
+                });
+
                 // on met à jour toutes les objets liés
                 dynamicPoint.triggerChanges();
             };
