@@ -34,7 +34,7 @@
         var DynamicCouple = function(dynamicPoint, $element) {
             var t = this;
             var cssValues = {};
-            var tweening = false;
+            var tweening = {};
 
             this.init = function() {
 
@@ -66,7 +66,7 @@
 
                 var bindedAttributeName = config.bindings[e.key].css;
 
-                if (cssValues[e.key] !== e.value && !tweening) {
+                if (cssValues[e.key] !== e.value && !tweening[e.key]) {
                     var cssObject = {};
                     cssObject[bindedAttributeName] = e.value;
 
@@ -81,14 +81,12 @@
                         }
                     } else {
 
-                        tweening = true;
+                        tweening[e.key] = true;
 
-
-                        // ne pas faire le tween ici, mais directement sur le point
                         TweenLite.to($element.get(0), config.tweenDuration, {
                             css: cssObject,
                             onComplete: function() {
-                                tweening = false;
+                                tweening[e.key] = false;
                             }
                         });
                     }
