@@ -16,7 +16,13 @@
 
     return function(config) {
 
-        var dynamicCouples = [];
+        var defaultConfig = {
+            tweenEnabled: true,
+            tweenDuration: 0.6
+        };
+
+
+        config = _.extend(defaultConfig, config);
 
 
         /**
@@ -28,6 +34,7 @@
         var DynamicCouple = function(dynamicPoint, $element) {
             var t = this;
             var cssValues = {};
+            var tweening = false;
 
             this.init = function() {
 
@@ -45,9 +52,9 @@
                 observer.observe($element.get(0), observerConfig);
 
                 // initialisation de l'objet cssValues (valeurs courantes des attributs)
-                dynamicPoint.foreach(function(e) {
+                /*dynamicPoint.foreach(function(e) {
                     cssValues[e.key] = e.value;
-                });
+                });*/
 
                 // on met à jour toutes les objets liés
                 dynamicPoint.triggerChanges();
@@ -59,15 +66,34 @@
 
                 var bindedAttributeName = config.bindings[e.key].css;
 
-                if (isGreensockTransformKey(bindedAttributeName)) {
+                if (cssValues[e.key] !== e.value && !tweening) {
                     var cssObject = {};
                     cssObject[bindedAttributeName] = e.value;
 
-                    TweenLite.set($element.get(0), {
-                        css: cssObject
-                    });
-                } else {
-                    $element.css(bindedAttributeName, e.value);
+                    if (!config.tweenEnabled) {
+                        if (isGreensockTransformKey(bindedAttributeName)) {
+
+                            TweenLite.set($element.get(0), {
+                                css: cssObject
+                            });
+                        } else {
+                            $element.css(bindedAttributeName, e.value);
+                        }
+                    } else {
+
+                        tweening = true;
+
+
+                        // ne pas faire le tween ici, mais directement sur le point
+                        TweenLite.to($element.get(0), config.tweenDuration, {
+                            css: cssObject,
+                            onComplete: function() {
+                                tweening = false;
+                            }
+                        });
+                    }
+
+                    cssValues[e.key] = e.value;
                 }
             }
 
