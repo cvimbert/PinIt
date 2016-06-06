@@ -79,6 +79,8 @@
                         } else {
                             $element.css(bindedAttributeName, e.value);
                         }
+
+                        cssValues[e.key] = e.value;
                     } else {
 
                         tweening[e.key] = true;
@@ -87,11 +89,12 @@
                             css: cssObject,
                             onComplete: function() {
                                 tweening[e.key] = false;
+                                cssValues[e.key] = e.value;
                             }
                         });
                     }
 
-                    cssValues[e.key] = e.value;
+
                 }
             }
 
@@ -121,8 +124,8 @@
                         }
 
                         if (currentValue !== cssValues[key]) {
-                            dynamicPoint.set(key, currentValue);
                             cssValues[key] = currentValue;
+                            dynamicPoint.set(key, currentValue);
                         }
                     });
 
